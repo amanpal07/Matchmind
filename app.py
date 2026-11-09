@@ -6,7 +6,7 @@ import streamlit as st
 
 ARTIFACTS = Path("artifacts")
 st.set_page_config(
-    page_title="FootballIQ | Match Predictor",
+    page_title="Matchmind | Football Match Predictor",
     page_icon="⚽",
     layout="wide",
 )
@@ -55,6 +55,13 @@ def load_artifacts():
     )
 
 
+try:
+    models, elo_state, metadata = load_artifacts()
+except Exception as exc:
+    st.error(f"Unable to load Matchmind model files: {exc}")
+    st.stop()
+
+
 def elo_for(team):
     return elo_state["ratings"].get(team, elo_state["initial_rating"])
 
@@ -90,7 +97,7 @@ def build_match(home, away, tournament, year, neutral, use_elo):
 st.markdown(
     """
     <div class="hero">
-      <h1 style="margin:0;">⚽ FootballIQ</h1>
+      <h1 style="margin:0;">⚽ Matchmind</h1>
       <h3 style="margin:.35rem 0;">International Football Match Predictor</h3>
       <p>Compare Logistic Regression and XGBoost, with optional Elo team-strength features.</p>
     </div>
@@ -242,10 +249,10 @@ with evaluation_tab:
 
 
 with about_tab:
-    st.subheader("About FootballIQ")
+    st.subheader("About Matchmind")
     st.write(
-        "A football outcome prediction project using international match "
-        "history, a custom Elo rating system, Logistic Regression and XGBoost."
+        "Matchmind predicts international football match outcomes using historical match "
+        "data, a custom Elo rating system, Logistic Regression and XGBoost."
     )
     st.write(f"Historical matches: **{metadata['match_count']:,}**")
     st.write(f"Latest match in dataset: **{metadata['last_historical_date']}**")
