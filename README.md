@@ -1,8 +1,8 @@
 # Matchmind
 
-<https://matchmind.streamlit.app/>
+<https://footballmatchmind.streamlit.app/>
 
-**Live application:** [Open Matchmind](https://matchmind.streamlit.app/)
+**Live application:** [Open Matchmind](https://footballmatchmind.streamlit.app/)
 
 Matchmind predicts international football match outcomes using historical results, a custom Elo rating system, and two machine-learning classifiers.
 
