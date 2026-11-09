@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -43,5 +45,6 @@ jobs:
             echo "No model artefact changes to commit."
           else
             git commit -m "Add trained FootballIQ model artefacts [skip ci]"
-            git push
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi
