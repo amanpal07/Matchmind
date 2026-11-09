@@ -1,6 +1,6 @@
-# FootballIQ
+# Matchmind
 
-FootballIQ predicts international football match outcomes using historical results, a custom Elo rating system, and two machine-learning classifiers.
+Matchmind predicts international football match outcomes using historical results, a custom Elo rating system, and two machine-learning classifiers.
 
 ## Features
 
@@ -15,8 +15,6 @@ FootballIQ predicts international football match outcomes using historical resul
 Download the [International Football Results dataset from Kaggle](https://www.kaggle.com/datasets/martj42/international-football-results-from-1872-to-2017).
 
 Place the CSV file named `results.csv` in the project root, alongside `train.py`.
-
-The dataset is not included in this repository.
 
 ## Installation
 
