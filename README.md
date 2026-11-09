@@ -1,6 +1,6 @@
-# FootballIQ
+# Matchmind
 
-FootballIQ predicts international football match outcomes using historical results, a custom Elo rating system, and two machine-learning classifiers.
+Matchmind predicts international football match outcomes using historical results, a custom Elo rating system, and two machine-learning classifiers.
 
 ## Features
 
