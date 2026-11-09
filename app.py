@@ -40,27 +40,12 @@ def load_artifacts():
         ARTIFACTS / "metadata.joblib",
     ]
     missing = [str(p) for p in required if not p.exists()]
-
-    # Streamlit Cloud starts from a clean checkout, so build artefacts once
-    # on first launch using the committed historical results.csv.
-    if missing:
-        if not Path("results.csv").exists():
-            raise FileNotFoundError(
-                "results.csv is missing from the repository. "
-                "Add the international results dataset and redeploy."
-            )
-        with st.spinner(
-            "Preparing FootballIQ for its first launch. "
-            "Training the models and building Elo ratings..."
-        ):
-            import train
-            train.main()
-
-    missing = [str(p) for p in required if not p.exists()]
     if missing:
         raise FileNotFoundError(
-            "Training completed but these artefacts are still missing: "
-            + ", ".join(missing)
+            "FootballIQ model files are not ready yet. "
+            "The GitHub Actions model-build workflow must finish first. "
+            "Check the Actions tab in the Matchmind repository, then refresh this page. "
+            "Missing: " + ", ".join(missing)
         )
 
     return (
