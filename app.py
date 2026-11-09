@@ -215,37 +215,90 @@ with ranking_tab:
 with evaluation_tab:
     st.subheader("Chronological holdout evaluation")
     rows = []
-    for key, values in metadata["evaluation"].items():
-        model_name, elo_label = key.split(" | Elo: ")
+    evaluation = metadata.get("evaluation", {})
+
+    for key, values in evaluation.items():
+        parts = key.split(" | Elo: ", maxsplit=1)
+        model_name = parts[0]
+        elo_label = parts[1] if len(parts) > 1 else "Unknown"
+
         rows.append(
             {
+                "Configuration": f"{model_name} (Elo: {elo_label})",
                 "Model": model_name,
                 "Elo": elo_label,
-                "Accuracy": values["accuracy"],
-                "Macro F1": values["macro_f1"],
-                "Log Loss": values["log_loss"],
+                "Accuracy": values.get("accuracy", values.get("Accuracy")),
+                "Macro F1": values.get("macro_f1", values.get("Macro F1")),
+                "Log Loss": values.get("log_loss", values.get("Log Loss")),
             }
         )
-    table = pd.DataFrame(rows)
-    st.dataframe(
-        table.style.format(
-            {
-                "Accuracy": "{:.3f}",
-                "Macro F1": "{:.3f}",
-                "Log Loss": "{:.3f}",
-            }
-        ),
-        use_container_width=True,
-        hide_index=True,
+
+    # Declare the expected columns explicitly. This keeps the table schema
+    # stable and avoids KeyError when evaluation metadata is empty or partial.
+    table = pd.DataFrame(
+        rows,
+        columns=[
+            "Configuration", "Model", "Elo",
+            "Accuracy", "Macro F1", "Log Loss",
+        ],
     )
-    st.caption(
-        f"Chronological split: training before {metadata['cutoff_date']}; "
-        f"testing from {metadata['cutoff_date']} onwards."
-    )
-    st.markdown("**Accuracy (higher is better)**")
-    st.bar_chart(table.set_index(["Model", "Elo"])["Accuracy"])
-    st.markdown("**Log loss (lower is better)**")
-    st.bar_chart(table.set_index(["Model", "Elo"])["Log Loss"])
+
+    if table.empty:
+        st.warning(
+            "Evaluation metrics are not available in the saved metadata. "
+            "The prediction models can still be used."
+        )
+    else:
+        metric_columns = ["Accuracy", "Macro F1", "Log Loss"]
+        for column in metric_columns:
+            table[column] = pd.to_numeric(table[column], errors="coerce")
+
+        st.dataframe(
+            table[["Model", "Elo", "Accuracy", "Macro F1", "Log Loss"]].style.format(
+                {
+                    "Accuracy": "{:.3f}",
+                    "Macro F1": "{:.3f}",
+                    "Log Loss": "{:.3f}",
+                },
+                na_rep="N/A",
+            ),
+            use_container_width=True,
+            hide_index=True,
+        )
+
+        st.caption(
+            f"Chronological split: training before {metadata['cutoff_date']}; "
+            f"testing from {metadata['cutoff_date']} onwards."
+        )
+
+        chart_data = table[["Configuration", "Accuracy"]].dropna(
+            subset=["Accuracy"]
+        )
+        loss_data = table[["Configuration", "Log Loss"]].dropna(
+            subset=["Log Loss"]
+        )
+
+        if not chart_data.empty:
+            st.markdown("**Accuracy (higher is better)**")
+            st.bar_chart(
+                chart_data,
+                x="Configuration",
+                y="Accuracy",
+                horizontal=True,
+            )
+        else:
+            st.info("Accuracy chart is unavailable because its values are missing.")
+
+        if not loss_data.empty:
+            st.markdown("**Log loss (lower is better)**")
+            st.bar_chart(
+                loss_data,
+                x="Configuration",
+                y="Log Loss",
+                horizontal=True,
+            )
+        else:
+            st.info("Log-loss chart is unavailable because its values are missing.")
 
 
 with about_tab:
