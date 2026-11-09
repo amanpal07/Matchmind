@@ -5,5 +5,6 @@ venv/
 results.csv
 artifacts/*
 !artifacts/.gitkeep
+!artifacts/*.joblib
 *.pyc
 .DS_Store
