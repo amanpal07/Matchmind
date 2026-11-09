@@ -1,6 +1,6 @@
-# Matchmind
+# FootballIQ
 
-Matchmind predicts international football match outcomes using historical results, a custom Elo rating system, and two machine-learning classifiers.
+FootballIQ predicts international football match outcomes using historical results, a custom Elo rating system, and two machine-learning classifiers.
 
 ## Features
 
@@ -9,12 +9,13 @@ Matchmind predicts international football match outcomes using historical result
 - Logistic Regression and XGBoost models
 - Models evaluated using a chronological holdout split
 - Streamlit interface for match predictions, Elo rankings, and model comparison
+- First-launch model training for deployment environments
 
 ## Dataset
 
-Download the [International Football Results dataset from Kaggle](https://www.kaggle.com/datasets/martj42/international-football-results-from-1872-to-2017).
+The repository includes `results.csv`, the dataset supplied for this project. It contains 49,547 usable international matches, with the latest recorded match dated 26 August 2026.
 
-Place the CSV file named `results.csv` in the project root, alongside `train.py`.
+The underlying dataset is the International Football Results collection by Mart Jürisoo (martj42), available on [Kaggle](https://www.kaggle.com/datasets/martj42/international-football-results-from-1872-to-2017) and the maintainer's [GitHub repository](https://github.com/martj42/international_results). The Kaggle dataset is published under CC0.
 
 ## Installation
 
@@ -24,13 +25,13 @@ source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
 pip install -r requirements.txt
 ```
 
-## Train the models
+## Train the models locally
 
 ```bash
 python train.py
 ```
 
-The training script evaluates Logistic Regression and XGBoost with and without Elo features, then fits deployment models on all available historical matches. Model files and metadata are saved in `artifacts/`.
+The training script evaluates Logistic Regression and XGBoost with and without Elo features using a chronological 80:20 holdout split. It then fits deployment models on all available historical matches and saves model files and metadata in `artifacts/`.
 
 ## Run the Streamlit app
 
@@ -38,11 +39,20 @@ The training script evaluates Logistic Regression and XGBoost with and without E
 streamlit run app.py
 ```
 
-The app requires the model artefacts created by the training step.
+If model artefacts are not present, the app automatically runs the training pipeline once on first launch. This supports clean deployments such as Streamlit Community Cloud.
 
-## Exploratory notebook results
+## Exploratory evaluation snapshot
 
-In the reported experiment, Logistic Regression with Elo achieved the strongest macro-F1 score (0.492). XGBoost with Elo achieved the strongest accuracy (59.70%) and lowest log loss (0.879) among the reported configurations. These are results from the exploratory evaluation; retraining may produce different results depending on the data and split.
+On the supplied dataset, the chronological holdout evaluation reported:
+
+| Model | Elo | Accuracy | Macro F1 | Log loss |
+|---|---:|---:|---:|---:|
+| Logistic Regression | No | 56.77% | 0.464 | 0.924 |
+| Logistic Regression | Yes | 58.83% | 0.491 | 0.890 |
+| XGBoost | No | 50.88% | 0.303 | 1.005 |
+| XGBoost | Yes | 59.69% | 0.447 | 0.879 |
+
+Accuracy and macro-F1 are higher-is-better; log loss is lower-is-better. These metrics describe this particular historical split and are not guarantees of future predictive performance.
 
 ## Project limitations
 
